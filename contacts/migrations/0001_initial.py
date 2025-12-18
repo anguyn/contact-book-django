@@ -66,7 +66,9 @@ class Migration(migrations.Migration):
                         max_length=254,
                         unique=True,
                         validators=[
-                            django.core.validators.EmailValidator(message="Email không hợp lệ")
+                            django.core.validators.EmailValidator(
+                                message="Email không hợp lệ"
+                            )
                         ],
                         verbose_name="Email",
                     ),
@@ -279,7 +281,9 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="contactgroupmembership",
-            index=models.Index(fields=["contact", "group"], name="idx_membership_contact_group"),
+            index=models.Index(
+                fields=["contact", "group"], name="idx_membership_contact_group"
+            ),
         ),
         migrations.AddIndex(
             model_name="contactgroupmembership",
@@ -291,7 +295,9 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="contact",
-            index=models.Index(fields=["last_name", "first_name"], name="idx_contact_name"),
+            index=models.Index(
+                fields=["last_name", "first_name"], name="idx_contact_name"
+            ),
         ),
         migrations.AddIndex(
             model_name="contact",

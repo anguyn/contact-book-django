@@ -1,0 +1,42 @@
+/* Header customization */
+#header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+#header a:link,
+#header a:visited {
+  color: white;
+}
+
+/* Change links color */
+.model-contact .addlink,
+.model-contactgroup .addlink {
+  color: #667eea;
+}
+
+/* Custom buttons */
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+  background: #667eea;
+  border: none;
+}
+
+.button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
+  background: #764ba2;
+}
+
+/* Favorite star in list */
+img[alt="True"] {
+  color: #ffd700;
+}
+
+/* Dashboard widgets */
+.module h2 {
+  background: #667eea;
+}

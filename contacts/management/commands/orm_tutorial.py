@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.db.models import Count, Q, F, Prefetch
+from django.db.models import Count, F, Prefetch, Q
+
 from contacts.models import Contact, ContactGroup, ContactGroupMembership
 
 
@@ -51,9 +52,7 @@ class Command(BaseCommand):
         all_contacts = Contact.objects.all()
         self.stdout.write(f"  → Tổng số contacts: {all_contacts.count()}")
         self.stdout.write(f"  → Type: {type(all_contacts)}")  # QuerySet
-        self.stdout.write(
-            f"  → SQL: {all_contacts.query}\n"
-        )  # In ra câu SQL thực tế
+        self.stdout.write(f"  → SQL: {all_contacts.query}\n")  # In ra câu SQL thực tế
 
         # 1.2 - filter(): Lọc theo điều kiện (trả về QuerySet)
         self.stdout.write(
@@ -65,9 +64,7 @@ class Command(BaseCommand):
             self.stdout.write(f"    • {contact.get_full_name} ⭐")
 
         # 1.3 - get(): Lấy 1 record duy nhất (raise exception nếu 0 hoặc >1)
-        self.stdout.write(
-            self.style.HTTP_INFO("\n1.3 - get(): Lấy 1 record duy nhất")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n1.3 - get(): Lấy 1 record duy nhất"))
         try:
             contact = Contact.objects.get(email="an.nguyen@company.com")
             self.stdout.write(f"  → Tìm thấy: {contact.get_full_name}")
@@ -82,18 +79,14 @@ class Command(BaseCommand):
         self.stdout.write(f"  → Contacts không yêu thích: {non_favorite.count()}")
 
         # 1.5 - first() & last(): Lấy record đầu/cuối
-        self.stdout.write(
-            self.style.HTTP_INFO("\n1.5 - first() & last(): Lấy đầu/cuối")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n1.5 - first() & last(): Lấy đầu/cuối"))
         first = Contact.objects.first()
         last = Contact.objects.last()
         self.stdout.write(f"  → First: {first.get_full_name if first else 'None'}")
         self.stdout.write(f"  → Last: {last.get_full_name if last else 'None'}")
 
         # 1.6 - exists(): Kiểm tra tồn tại (nhanh hơn count() > 0)
-        self.stdout.write(
-            self.style.HTTP_INFO("\n1.6 - exists(): Kiểm tra tồn tại")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n1.6 - exists(): Kiểm tra tồn tại"))
         has_contacts = Contact.objects.filter(is_favorite=True).exists()
         self.stdout.write(f"  → Có contacts yêu thích? {has_contacts}")
 
@@ -107,9 +100,7 @@ class Command(BaseCommand):
             )
 
         # 1.8 - values(): Lấy dict thay vì object
-        self.stdout.write(
-            self.style.HTTP_INFO("\n1.8 - values(): Lấy dict thay vì object")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n1.8 - values(): Lấy dict thay vì object"))
         emails = Contact.objects.values("first_name", "last_name", "email")[:2]
         for item in emails:
             self.stdout.write(f"  → {item}")
@@ -137,9 +128,7 @@ class Command(BaseCommand):
         self.stdout.write(f"  → Tên chính xác 'An': {exact.count()}")
 
         # 2.2 - iexact (case-insensitive)
-        self.stdout.write(
-            self.style.HTTP_INFO("2.2 - iexact: So sánh không phân biệt hoa thường")
-        )
+        self.stdout.write(self.style.HTTP_INFO("2.2 - iexact: So sánh không phân biệt hoa thường"))
         iexact = Contact.objects.filter(first_name__iexact="an")
         self.stdout.write(f"  → Tên 'an' (không phân biệt hoa/thường): {iexact.count()}")
 
@@ -151,27 +140,22 @@ class Command(BaseCommand):
             self.stdout.write(f"    • {c.email}")
 
         # 2.4 - icontains (case-insensitive)
-        self.stdout.write(
-            self.style.HTTP_INFO("\n2.4 - icontains: Chứa substring (ignore case)")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n2.4 - icontains: Chứa substring (ignore case)"))
         icontains = Contact.objects.filter(address__icontains="tp.hcm")
         self.stdout.write(f"  → Địa chỉ chứa 'tp.hcm': {icontains.count()}")
 
         # 2.5 - startswith / endswith
-        self.stdout.write(
-            self.style.HTTP_INFO("\n2.5 - startswith/endswith: Bắt đầu/kết thúc")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n2.5 - startswith/endswith: Bắt đầu/kết thúc"))
         starts = Contact.objects.filter(last_name__startswith="Nguyễn")
         ends = Contact.objects.filter(email__endswith=".com")
         self.stdout.write(f"  → Họ bắt đầu 'Nguyễn': {starts.count()}")
         self.stdout.write(f"  → Email kết thúc '.com': {ends.count()}")
 
         # 2.6 - gt, gte, lt, lte (so sánh số/ngày)
-        self.stdout.write(
-            self.style.HTTP_INFO("\n2.6 - gt/gte/lt/lte: So sánh lớn hơn/nhỏ hơn")
-        )
-        from django.utils import timezone
+        self.stdout.write(self.style.HTTP_INFO("\n2.6 - gt/gte/lt/lte: So sánh lớn hơn/nhỏ hơn"))
         from datetime import timedelta
+
+        from django.utils import timezone
 
         one_day_ago = timezone.now() - timedelta(days=1)
         recent = Contact.objects.filter(created_at__gte=one_day_ago)
@@ -184,9 +168,7 @@ class Command(BaseCommand):
         self.stdout.write(f"  → Contacts trong list: {in_list.count()}")
 
         # 2.8 - isnull (NULL check)
-        self.stdout.write(
-            self.style.HTTP_INFO("\n2.8 - isnull: Kiểm tra NULL")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n2.8 - isnull: Kiểm tra NULL"))
         no_phone = Contact.objects.filter(phone__isnull=True)
         has_phone = Contact.objects.filter(phone__isnull=False)
         self.stdout.write(f"  → Không có SĐT: {no_phone.count()}")
@@ -197,9 +179,7 @@ class Command(BaseCommand):
             self.style.HTTP_INFO("\n2.9 - Q objects: Điều kiện phức tạp (OR/AND/NOT)")
         )
         # OR: is_favorite HOẶC email chứa 'company'
-        q_or = Contact.objects.filter(
-            Q(is_favorite=True) | Q(email__contains="company")
-        )
+        q_or = Contact.objects.filter(Q(is_favorite=True) | Q(email__contains="company"))
         self.stdout.write(f"  → Yêu thích HOẶC email @company: {q_or.count()}")
 
         # AND: is_favorite VÀ không có phone
@@ -214,19 +194,15 @@ class Command(BaseCommand):
     # SECTION 3: JOINS & PERFORMANCE
     # ========================================================================
     def section_3_joins_performance(self):
-        self.stdout.write(
-            self.style.WARNING("\n\n📚 SECTION 3: JOINS & PERFORMANCE OPTIMIZATION")
-        )
+        self.stdout.write(self.style.WARNING("\n\n📚 SECTION 3: JOINS & PERFORMANCE OPTIMIZATION"))
         self.stdout.write("=" * 70 + "\n")
 
         # 3.1 - N+1 Query Problem
-        self.stdout.write(
-            self.style.HTTP_INFO("3.1 - N+1 Query Problem (VẤN ĐỀ PHẢI TRÁNH!)")
-        )
+        self.stdout.write(self.style.HTTP_INFO("3.1 - N+1 Query Problem (VẤN ĐỀ PHẢI TRÁNH!)"))
         self.stdout.write("  ⚠️  Code SAI (gây N+1 queries):\n")
 
-        from django.db import connection, reset_queries
         from django.conf import settings
+        from django.db import connection, reset_queries
 
         # Bật debug để đếm queries
         settings.DEBUG = True
@@ -239,40 +215,28 @@ class Command(BaseCommand):
             self.stdout.write(f"    {contact.get_full_name}: {groups.count()} groups")
 
         bad_query_count = len(connection.queries)
-        self.stdout.write(
-            self.style.ERROR(f"  → Tổng queries: {bad_query_count} queries! ❌\n")
-        )
+        self.stdout.write(self.style.ERROR(f"  → Tổng queries: {bad_query_count} queries! ❌\n"))
 
         # 3.2 - select_related() (cho ForeignKey, OneToOne)
         self.stdout.write(
-            self.style.HTTP_INFO(
-                "3.2 - select_related(): JOIN ngay từ đầu (ForeignKey)"
-            )
+            self.style.HTTP_INFO("3.2 - select_related(): JOIN ngay từ đầu (ForeignKey)")
         )
         self.stdout.write("  ✅ Code ĐÚNG với select_related:\n")
 
         reset_queries()
 
         # ContactGroupMembership có ForeignKey tới Contact và Group
-        memberships = ContactGroupMembership.objects.select_related(
-            "contact", "group"
-        )[:5]
+        memberships = ContactGroupMembership.objects.select_related("contact", "group")[:5]
         for membership in memberships:
             # Không có query mới vì đã JOIN từ đầu!
-            self.stdout.write(
-                f"    {membership.contact.get_full_name} → {membership.group.name}"
-            )
+            self.stdout.write(f"    {membership.contact.get_full_name} → {membership.group.name}")
 
         good_query_count = len(connection.queries)
-        self.stdout.write(
-            self.style.SUCCESS(f"  → Tổng queries: {good_query_count} queries! ✅\n")
-        )
+        self.stdout.write(self.style.SUCCESS(f"  → Tổng queries: {good_query_count} queries! ✅\n"))
 
         # 3.3 - prefetch_related() (cho ManyToMany, reverse ForeignKey)
         self.stdout.write(
-            self.style.HTTP_INFO(
-                "3.3 - prefetch_related(): JOIN riêng biệt (ManyToMany)"
-            )
+            self.style.HTTP_INFO("3.3 - prefetch_related(): JOIN riêng biệt (ManyToMany)")
         )
         self.stdout.write("  ✅ Code ĐÚNG với prefetch_related:\n")
 
@@ -281,20 +245,14 @@ class Command(BaseCommand):
         contacts = Contact.objects.prefetch_related("groups")[:3]
         for contact in contacts:
             groups = contact.groups.all()  # Không query mới!
-            self.stdout.write(
-                f"    {contact.get_full_name}: {', '.join([g.name for g in groups])}"
-            )
+            self.stdout.write(f"    {contact.get_full_name}: {', '.join([g.name for g in groups])}")
 
         prefetch_count = len(connection.queries)
-        self.stdout.write(
-            self.style.SUCCESS(f"  → Tổng queries: {prefetch_count} queries! ✅\n")
-        )
+        self.stdout.write(self.style.SUCCESS(f"  → Tổng queries: {prefetch_count} queries! ✅\n"))
 
         # 3.4 - Prefetch() object (advanced)
         self.stdout.write(
-            self.style.HTTP_INFO(
-                "3.4 - Prefetch(): Tùy chỉnh prefetch với queryset riêng"
-            )
+            self.style.HTTP_INFO("3.4 - Prefetch(): Tùy chỉnh prefetch với queryset riêng")
         )
 
         # Chỉ prefetch groups loại WORK
@@ -313,9 +271,7 @@ class Command(BaseCommand):
                 )
 
         # 3.5 - F() expressions (so sánh fields với nhau)
-        self.stdout.write(
-            self.style.HTTP_INFO("\n3.5 - F(): So sánh 2 fields với nhau")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n3.5 - F(): So sánh 2 fields với nhau"))
         # Ví dụ: Tìm contacts có first_name = last_name (giả định)
         # Hoặc so sánh số lượng: view_count > like_count (nếu có)
         self.stdout.write("  → F() dùng để so sánh fields trong database\n")
@@ -326,16 +282,12 @@ class Command(BaseCommand):
     # SECTION 4: AGGREGATIONS
     # ========================================================================
     def section_4_aggregations(self):
-        self.stdout.write(
-            self.style.WARNING("\n\n📚 SECTION 4: AGGREGATIONS & ANNOTATIONS")
-        )
+        self.stdout.write(self.style.WARNING("\n\n📚 SECTION 4: AGGREGATIONS & ANNOTATIONS"))
         self.stdout.write("=" * 70 + "\n")
 
         # 4.1 - aggregate(): Tính toán trên toàn bộ QuerySet
-        self.stdout.write(
-            self.style.HTTP_INFO("4.1 - aggregate(): Tính toán tổng thể")
-        )
-        from django.db.models import Count, Avg, Max, Min
+        self.stdout.write(self.style.HTTP_INFO("4.1 - aggregate(): Tính toán tổng thể"))
+        from django.db.models import Avg, Count, Max, Min
 
         stats = Contact.objects.aggregate(
             total=Count("id"),
@@ -345,12 +297,10 @@ class Command(BaseCommand):
         self.stdout.write(f"  → Contacts yêu thích: {stats['favorite_count']}")
 
         # 4.2 - annotate(): Thêm field tính toán cho từng object
-        self.stdout.write(
-            self.style.HTTP_INFO("\n4.2 - annotate(): Thêm field tính toán")
+        self.stdout.write(self.style.HTTP_INFO("\n4.2 - annotate(): Thêm field tính toán"))
+        groups_with_count = ContactGroup.objects.annotate(member_count=Count("contacts")).order_by(
+            "-member_count"
         )
-        groups_with_count = ContactGroup.objects.annotate(
-            member_count=Count("contacts")
-        ).order_by("-member_count")
 
         self.stdout.write("  → Groups theo số thành viên:\n")
         for group in groups_with_count:
@@ -360,27 +310,19 @@ class Command(BaseCommand):
             )
 
         # 4.3 - annotate() với filter
-        self.stdout.write(
-            self.style.HTTP_INFO("\n4.3 - annotate() với điều kiện")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n4.3 - annotate() với điều kiện"))
         groups_with_favorite = ContactGroup.objects.annotate(
             favorite_count=Count("contacts", filter=Q(contacts__is_favorite=True))
         )
 
         for group in groups_with_favorite:
             if group.favorite_count > 0:
-                self.stdout.write(
-                    f"  {group.name}: {group.favorite_count} favorite contacts"
-                )
+                self.stdout.write(f"  {group.name}: {group.favorite_count} favorite contacts")
 
         # 4.4 - values() + annotate() = GROUP BY
-        self.stdout.write(
-            self.style.HTTP_INFO("\n4.4 - values() + annotate() = GROUP BY")
-        )
+        self.stdout.write(self.style.HTTP_INFO("\n4.4 - values() + annotate() = GROUP BY"))
         group_types = (
-            ContactGroup.objects.values("group_type")
-            .annotate(count=Count("id"))
-            .order_by("-count")
+            ContactGroup.objects.values("group_type").annotate(count=Count("id")).order_by("-count")
         )
 
         self.stdout.write("  → Thống kê theo loại group:\n")
@@ -394,9 +336,7 @@ class Command(BaseCommand):
     # SECTION 5: TRANSACTIONS
     # ========================================================================
     def section_5_transactions(self):
-        self.stdout.write(
-            self.style.WARNING("\n\n📚 SECTION 5: TRANSACTIONS & DATA INTEGRITY")
-        )
+        self.stdout.write(self.style.WARNING("\n\n📚 SECTION 5: TRANSACTIONS & DATA INTEGRITY"))
         self.stdout.write("=" * 70 + "\n")
 
         # 5.1 - transaction.atomic() context manager
@@ -430,17 +370,13 @@ class Command(BaseCommand):
                 # Nếu có lỗi ở đây → rollback TẤT CẢ
                 # raise Exception("Test rollback!")
 
-                self.stdout.write(
-                    self.style.SUCCESS("  → Transaction thành công! ✅\n")
-                )
+                self.stdout.write(self.style.SUCCESS("  → Transaction thành công! ✅\n"))
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"  → Transaction thất bại: {e} ❌\n"))
 
         # 5.2 - Savepoints (nested transactions)
-        self.stdout.write(
-            self.style.HTTP_INFO("5.2 - Savepoints: Nested transactions")
-        )
+        self.stdout.write(self.style.HTTP_INFO("5.2 - Savepoints: Nested transactions"))
 
         try:
             with transaction.atomic():
@@ -458,33 +394,23 @@ class Command(BaseCommand):
                 try:
                     # Thử thêm vào group không tồn tại
                     fake_group = ContactGroup.objects.get(name="Fake Group")
-                    ContactGroupMembership.objects.create(
-                        contact=contact, group=fake_group
-                    )
+                    ContactGroupMembership.objects.create(contact=contact, group=fake_group)
                 except ContactGroup.DoesNotExist:
                     # Rollback về savepoint (giữ contact, bỏ membership)
                     transaction.savepoint_rollback(sid)
-                    self.stdout.write(
-                        "  ⚠️  Rollback savepoint (group không tồn tại)"
-                    )
+                    self.stdout.write("  ⚠️  Rollback savepoint (group không tồn tại)")
 
                 # Contact vẫn được tạo
                 self.stdout.write(
-                    self.style.SUCCESS(
-                        f"  → Contact vẫn tồn tại: {contact.email} ✅\n"
-                    )
+                    self.style.SUCCESS(f"  → Contact vẫn tồn tại: {contact.email} ✅\n")
                 )
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"  → Lỗi: {e}\n"))
 
         # 5.3 - select_for_update() (locking)
-        self.stdout.write(
-            self.style.HTTP_INFO("5.3 - select_for_update(): Database locking")
-        )
-        self.stdout.write(
-            "  → Dùng để tránh race condition khi nhiều users cùng update\n"
-        )
+        self.stdout.write(self.style.HTTP_INFO("5.3 - select_for_update(): Database locking"))
+        self.stdout.write("  → Dùng để tránh race condition khi nhiều users cùng update\n")
 
         try:
             with transaction.atomic():
@@ -501,9 +427,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f"  → Lỗi: {e}\n"))
 
         # 5.4 - Best practices
-        self.stdout.write(
-            self.style.HTTP_INFO("5.4 - Transaction Best Practices:")
-        )
+        self.stdout.write(self.style.HTTP_INFO("5.4 - Transaction Best Practices:"))
         self.stdout.write("  ✅ Dùng transaction.atomic() cho operations phức tạp")
         self.stdout.write("  ✅ Dùng savepoints cho nested logic")
         self.stdout.write("  ✅ Dùng select_for_update() khi cần locking")

@@ -81,15 +81,3 @@ docker compose logs -f postgres
 # Database shell
 docker exec -it contact_book_postgres psql -U contact_user -d contact_book_db
 ```
-
-## Project Structure
-
-```
-contact-book-django/
-├── docker/                    # Docker configuration
-├── contact_book_project/     # Django settings
-├── contacts/                 # Contacts app
-├── docker-compose.yml        # Docker Compose config
-├── requirements.txt          # Python dependencies
-└── .env                      # Environment variables
-```

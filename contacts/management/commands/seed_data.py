@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
+
 from contacts.models import Contact, ContactGroup, ContactGroupMembership
 
 
@@ -246,7 +247,6 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f"  ✗ Không tìm thấy contact: {email}"))
 
     def _print_summary(self):
-        """In ra thống kê tổng quan"""
         self.stdout.write("\n" + "=" * 60)
         self.stdout.write(self.style.SUCCESS("THỐNG KÊ DATABASE"))
         self.stdout.write("=" * 60)
